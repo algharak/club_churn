@@ -5,10 +5,19 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler,MinMaxScaler,LabelEncoder
 le = LabelEncoder()
 
-a = [[1,2],[3.4]]
-for i in range(len(a)):
-    print (a[i])
+def double(x):
+    return 2*x
 
+a = [double,1]
+
+print(a[0](5))
+exit()
+
+dict={'here':double}
+print (dict.keys())
+print (dict.values())
+
+print(dict['here'](2))
 
 exit()
 

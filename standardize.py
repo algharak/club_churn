@@ -40,12 +40,11 @@ newcolnames=['MEMBERSHIP_STATUS',
              'ADDITIONAL_MEMBERS_CAT',
              'PAYMENT_MODE_CAT',
              'START_DATE_MINMAX_SC',
-             'END_DATE_MINMAX_SC',
-             'MEMBERSHIP_DUR_MINMAX_SC']
-
-
+             'END_DATE_MINMAX_SC']
+#### setup parameters
 ds_len = 'Long'
 ds_type =   'Train'
+
 is_short = True if ds_len == 'Short' else False
 is_long = not is_short
 is_tr   = True if ds_type == 'Train' else False
@@ -55,10 +54,7 @@ InFilenames       = ['./dataset/club_churn_test_short.csv','./dataset/club_churn
 OutFilenames       = ['./dataset/club_churn_test_short_std.csv','./dataset/club_churn_test_std.csv','./dataset/club_churn_train_short_std.csv','./dataset/club_churn_train_std.csv']
 ptr = 2*is_tr + is_long
 dataset_in      = InFilenames [ptr]
-
 dataset_out      = OutFilenames [ptr]
-
-print ('hello')
 
 ###### utilities
 def clear_old_outputs (file):
@@ -98,6 +94,8 @@ def most_often_imp(col):
 def avg_imp(col):
     col.fillna(col.mean(), inplace=True)
     return col
+
+
 
 #scalers
 def minmax_scaler(col):
@@ -219,27 +217,11 @@ def mem_paymode_cat(pd_i,pd_o):
 def mem_stdate_mm_sc(pd_i,pd_o):
     src_col = 'START_DATE'
     tgt_col = 'START_DATE_MINMAX_SC'
-    src_col_end = 'END_DATE'
-    tgt_col_dur =  'MEMBERSHIP_DUR_MINMAX_SC'
-
-    max_date = pd_i[src_col_end].max()
-    pd_i[src_col_end].fillna(value=max_date, inplace=True)
-    end_datesn = pd_i[src_col_end].apply(date2int)
     st_datesn = pd_i[src_col].apply (date2int)
-
-
-
-    mem_dur = end_datesn - st_datesn
-
     st_datesnp = st_datesn.values
     st_datesnp = st_datesnp.reshape(len(st_datesnp), 1)
     scaler = mm_scaler.fit(st_datesnp)
     pd_o[tgt_col] = mm_scaler.transform(st_datesnp)
-
-    mem_durnp = mem_dur.values
-    mem_durp = mem_durnp.reshape(len(mem_durnp), 1)
-    scaler2 = mm_scaler.fit(mem_durp)
-    pd_o[tgt_col_dur] = mm_scaler.transform(mem_durp)
     return pd_o
 
 def mem_endt_mm_sc(pd_i,pd_o):
@@ -287,8 +269,6 @@ def pre_processor(pin,cn,pout):
         pout = mem_stdate_mm_sc(pin,pout)
     elif cn== 15:
         pout=   mem_endt_mm_sc (pin,pout)
-    elif cn == 16:
-        pout = mem_dur_mm_sc(pin, pout)
     return pout
 
 ###### retrieve input dataset
@@ -306,7 +286,6 @@ print (ncols, '   ', nrows)
 for coln,col in enumerate(newcolnames):
    print (coln,col)
    p_out = pre_processor(pd_dsetin,coln,pd_dsetout)
-aaa = dataset_out
 p_out.to_csv(dataset_out,index=False)
 exit()
 
