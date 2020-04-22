@@ -11,9 +11,6 @@ Kbins_disc= KBinsDiscretizer(n_bins=5, encode='ordinal', strategy='uniform')
 def most_f_imp(col):
     mode = col.mode().values[0][0]
     newcol = col.fillna(mode)
-    #col.fillna(col.mode())
-    #data['Native Country'].fillna(data['Native Country'].mode()[0], inplace=True)
-    #exit()
     return newcol
 
 def avg_imp(col):
@@ -56,14 +53,20 @@ col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
               'MEMBER_AGE_AT_ISSUE':[[None],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
               'ADDITIONAL_MEMBERS':[[None],['lbl_enc_sc']],
               'PAYMENT_MODE':[[None],['lbl_enc_sc']],
-              'START_DATE':[['numerize'],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']]}
-
+              'START_DATE':[['numerize'],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
+              'INDEX':[[None],[None]],
+              'MEMBERSHIP_NUMBER':[[None],[None]],
+              'AGENT_CODE':[[None],[None]],
+              'END_DATE':[[None],[None]]}
 
 def procss_impute (clm,cmd):
     nu_clm = clm.copy(deep=True)
-    need2impute = (clm.isnull().values.any() and cmd != None) or cmd=='numerize'
-    if need2impute:
-        nu_clm=impute_[cmd](clm).copy(deep=True)
+    #remove a = cmd != None
+    #need2impute = (clm.isnull().values.any() and cmd[0] != None) or cmd[0]=='numerize'
+    #if need2impute:
+        #nu_clm=impute_[cmd[0]](clm)
+        #nu_clm=impute_[cmd](clm.copy(deep=True))
+    nu_clm=impute_[cmd[0]](clm)
     return nu_clm
 
 def procss_scale (clm,cmd,frm):
@@ -72,21 +75,23 @@ def procss_scale (clm,cmd,frm):
     colvals = clm[colname].values
     if cmd != 'lbl_enc_sc':
         colvals = colvals.reshape(len(colvals), 1)
-    col_np  = colvals
-    if cmd != 'intact':
-        col_np =scale_[cmd](colvals)
+    col_np =scale_[cmd](colvals)
     clm_o =pd.DataFrame(col_np,columns=[colnuname])
     frm_o = pd.concat([frm,clm_o],axis=1)
     return frm_o
 
 def procss (frm):
     out_frame = pd.DataFrame()
-    for colname,cmds in col_assign.items():
-        imput_cmd = cmds[0][0]
-        scale_cmds = cmds[1]
-        imputed_col     =   procss_impute(frm[[colname]],imput_cmd)
-        for scale_cmd in scale_cmds:
-            out_frame = procss_scale(imputed_col,scale_cmd,out_frame)
+    colnames = frm.columns.values.tolist()
+    for inx in colnames:
+        imput_cmd = col_assign[inx][0]
+        scale_cmds = col_assign[inx][1]
+        col = frm [[inx]]
+        if imput_cmd != [None]:
+            col     =   procss_impute(col,imput_cmd)
+        if scale_cmds !=[None]:
+            for scale_cmd in scale_cmds:
+                out_frame = procss_scale(col,scale_cmd,out_frame)
     return out_frame
 
 def transform_(trte_list):

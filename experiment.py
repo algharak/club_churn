@@ -1,6 +1,17 @@
 import pandas as pd
 import numpy as np
 
+list = ['rmse','rmsle']
+mydict=dict()
+for item in list:
+    mydict[item]={'trcol':'train-'+item+'-mean',
+                  'tecol':'test-'+item+' - mean',
+                  'ylab': item,
+                  'title': item}
+
+print (mydict.items())
+
+'''
 
 from sklearn.preprocessing import StandardScaler,MinMaxScaler,LabelEncoder
 le = LabelEncoder()
@@ -68,7 +79,6 @@ print(df.head())
 df=df['col'].apply(func)
 print(df.head())
 
-'''
 df = pd.DataFrame({'date': ['19910101','19921204','19930104']})
 dates = pd.to_datetime(df['date'], format='%Y%m%d', errors='ignore')
 df.info()
