@@ -50,7 +50,7 @@ def train_ (trte_pd):
         y = pdcol2np(procss(trte_pd [[labels]]))
         x = pdcol2np(procss(trte_pd.drop(labels, axis=1)))
         xtr, xte, ytr, yte = train_test_split(x, y, test_size=args.trte_split, random_state=42)
-        np.random.shuffle(ytr)
+        #np.random.shuffle(ytr)
         eval_set = [(xtr,ytr),(xte,yte)]
         print(('***********     Begin Training'))
         model = xgb(**args.xgb['param'])
