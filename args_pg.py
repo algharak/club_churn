@@ -5,17 +5,11 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--src_file", type=str, default=
                         './dataset/club_churn_source.csv')
-    parser.add_argument("--shuffle", type=int, default=5)
+    parser.add_argument("--shuffle", type=int, default=4)
     parser.add_argument("--plt_learn_cv", type=bool, default=True)
     parser.add_argument("--trte_split", type=float, default=0.2)
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--Kfolds", type=int, default=1)
-    parser.add_argument("--xgb_param", type=dict, default={
-                        'max_depth': 2,
-                        'learning_rate': 0.1,
-                        'n_estimators': 200,
-                        'reg_lambda':0.25,
-                        'reg_alpha':0.25})
     parser.add_argument("--xgb_gs_param", type=dict,default={
                         'max_depth': [15,20,25,30,35,40],
                         'learning_rate': [0.05,0.1,0.25],

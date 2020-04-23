@@ -14,7 +14,6 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
-from utils import pdcol2np, build_dict
 
 def flatten_list (l):
     return [item for sublist in l for item in sublist]

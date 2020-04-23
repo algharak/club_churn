@@ -59,6 +59,11 @@ col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
               'AGENT_CODE':[[None],[None]],
               'END_DATE':[[None],[None]]}
 
+
+impute_ = {'avg_imp':avg_imp,
+           'most_f_imp':most_f_imp,
+           'numerize':numerize}
+
 def procss_impute (clm,cmd):
     nu_clm = clm.copy(deep=True)
     #remove a = cmd != None
