@@ -2,6 +2,8 @@ from args_pg import parse_args
 args = parse_args()
 import pandas as pd
 import numpy as np
+from sklearn.utils  import shuffle
+
 
 def pdcol2np (col):
     nrows = col.shape[0]
@@ -10,6 +12,12 @@ def pdcol2np (col):
     if ncols==1:
         colnp = col.values.reshape((nrows))
     return colnp
+
+def myshuffle (x):
+    for iter in range(args.shuffle):
+        x=shuffle(x)
+    x = x.reset_index(drop=True)
+    return x
 '''
 
 
