@@ -14,6 +14,7 @@ from gen_plots import gen_plot
 from xgboost import XGBClassifier as xgb_kl
 import matplotlib.pylab as plt
 import random
+from experiment import *
 
 def get_master_pd(path):
     return pd.read_csv(path)
@@ -27,132 +28,6 @@ def extract_cmds (e):
     get_dataset =eval(eval('args.'+e)['get_dataset'])
     do_cv = eval(eval('args.'+e)['do_cv'])
     return do_train,do_cv,rounds,params, get_dataset
-
-def train_ (trte_li,y_shuff = False):
-    print ('***********     Start The Training Process')
-    [xtr, xte, ytr, yte] = trte_li
-    predictors = [x for x in xtr.columns]
-    eval_set = [(xtr,ytr),(xte,yte)]
-    print(('***********     Pick LR & nEstimators'))
-    xgb1 = xgb_kl(
-        learning_rate=0.05,
-        n_estimators=200,
-        max_depth=5,
-        min_child_weight=1,
-        gamma=0,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        objective='binary:logistic',
-        nthread=4,
-        scale_pos_weight=0.41,
-        seed=27)
-    modelfit(xgb1, xtr,ytr,xte,yte,predictors)
-    do_test1=False
-    if do_test1:
-        param_test1 = {
-            'max_depth': range(3, 5 , 1),
-            'min_child_weight': range(1, 3, 1)}
-        gsearch1 = GridSearchCV(estimator=xgb_kl(learning_rate=0.1, n_estimators=140, max_depth=5,
-                                                        min_child_weight=1, gamma=0, subsample=0.8, colsample_bytree=0.8,
-                                                        objective='binary:logistic', nthread=1, scale_pos_weight=1,
-                                                        seed=27,refit=True),
-                                param_grid=param_test1, scoring='roc_auc', n_jobs=4, cv=5)
-        gsearch1.fit(xtr,pdcol2np(ytr))
-        gsearch1.best_params_, gsearch1.best_score_
-    do_test3=False
-    if do_test3:
-        param_test3 = {'gamma': [i / 1000.0 for i in range(0, 300,30)]}
-        gsearch3 = GridSearchCV(estimator=xgb_kl(learning_rate=0.1, n_estimators=500, max_depth=4,
-                                                 min_child_weight=1, gamma=0, subsample=0.8, colsample_bytree=0.8,
-                                                 objective='binary:logistic', scale_pos_weight=1,
-                                                 seed=32, refit=True),
-                                param_grid=param_test3, scoring='roc_auc', cv=5)
-        gsearch3.fit(xtr, pdcol2np(ytr))
-        gsearch3.best_params_, gsearch3.best_score_
-        print()
-
-    do_test4 =  False
-    if do_test4:
-        print('******** tunning subsample and colsample_bytree')
-        param_test4 = {
-            'subsample': [i / 10.0 for i in range(6, 10)],
-            'colsample_bytree': [i / 10.0 for i in range(6, 10)]}
-        gsearch4 = GridSearchCV(estimator=xgb_kl(learning_rate=0.1, n_estimators=500, max_depth=3,
-                                                        min_child_weight=.001, gamma=0.3, subsample=0.8, colsample_bytree=0.8,
-                                                        objective='binary:logistic', scale_pos_weight=1,
-                                                        seed=27,refit=True),
-                                param_grid=param_test4, scoring='roc_auc', cv=5)
-        gsearch4.fit(xtr, pdcol2np(ytr))
-        gsearch4.best_params_, gsearch4.best_score_
-
-    do_test5 = False
-    if do_test5:
-        print('********  fine tunning subsample and colsample_bytree ')
-        param_test5 = {
-            'subsample': [i / 100.0 for i in range(60, 80,5)],
-            'colsample_bytree': [i / 100.0 for i in range(70, 95, 5)]}
-        gsearch5 = GridSearchCV(estimator=xgb_kl(learning_rate=0.1, n_estimators=500, max_depth=1,
-                                                 min_child_weight=1, gamma=1.03, subsample=0.6, colsample_bytree=0.8,
-                                                 objective='binary:logistic', scale_pos_weight=1,
-                                                 seed=27, refit=False),
-                                param_grid=param_test5, scoring='roc_auc', cv=10)
-        gsearch5.fit(xtr, pdcol2np(ytr))
-        gsearch5.best_params_, gsearch5.best_score_
-
-    do_test6 = False
-    if do_test6:
-        print('******** tunning reg_alpha ')
-        param_test6 = {
-            'reg_alpha': [1, 2,4,8,10,20]}
-        gsearch6 = GridSearchCV(estimator=xgb_kl(learning_rate=0.1, n_estimators=500, max_depth=4,
-                                                 min_child_weight=1, gamma=0.03, subsample=0.6, colsample_bytree=0.8,
-                                                 objective='binary:logistic', scale_pos_weight=1,
-                                                 seed=27, refit=True),
-                                param_grid=param_test6, scoring='roc_auc', cv=5)
-        gsearch6.fit(xtr, pdcol2np(ytr))
-        gsearch6.best_params_, gsearch6.best_score_
-
-    do_test7 = False
-    if do_test7:
-        param_test7 = {
-            'learning_rate': [0.02, 0.03, 0.04, 0.05, 0.06, 0.12],'reg_alpha':[10]}
-        print('******** tunning LR ')
-        gsearch7 = GridSearchCV(estimator=xgb_kl(learning_rate=0.1, n_estimators=1000, max_depth=4,
-                                                 min_child_weight=1, gamma=0.1, subsample=0.6, colsample_bytree=0.6,
-                                                 objective='binary:logistic', scale_pos_weight=1,
-                                                 seed=27, refit=True),param_grid=param_test7, scoring='roc_auc', cv=5)
-        gsearch7.fit(xtr, pdcol2np(ytr))
-        gsearch7.best_params_, gsearch7.best_score_
-    do_plot = True
-    if do_plot:
-        final_model = xgb_kl(learning_rate=0.05, n_estimators=25000, max_depth=5,
-                                                 min_child_weight=1, gamma=3, subsample=0.6, colsample_bytree=0.6,
-                                                 objective='binary:logistic',seed=27,reg_alpha=38
-                             ,reg_lambda=38,scale_pos_weight=0.41)
-        if y_shuff:
-            ytr = myshuffle(ytr)
-        ytr = pdcol2np(ytr)
-        bst = final_model.fit(xtr, ytr, eval_set=eval_set,eval_metric='auc')
-        eval_result = bst.evals_result()
-        ypred = bst.predict(xte)
-        print(confusion_matrix(yte, ypred))
-        print(classification_report(yte, ypred))
-        print('The Accuracy is:  ', "{:.2%}".format(accuracy_score(yte, ypred)))
-        print('The Balanced Accuracy is:  ', "{:.2%}".format(balanced_accuracy_score(yte, ypred)))
-        gen_plot(eval_result)
-    exit()
-
-def prep_data (fr,pd=True,standardize=True):
-    print ('\n***********    Retrieving Train/Test Data')
-    labels = fr.columns[-1]
-    y = procss(fr[[labels]])
-    x = procss(fr.drop(labels, axis=1))
-    xtr, xte, ytr, yte = train_test_split(x, y, test_size=args.trte_split, random_state=42)
-    if not pd:
-        ytr = pdcol2np(ytr) ; yte = pdcol2np(yte)
-        xtr = pdcol2np(xtr) ;   xte = pdcol2np(xte)
-    xtr, xte, ytr, yte = train_test_split(x, y, test_size=args.trte_split, random_state=42)
-    return [xtr, xte, ytr, yte]
 
 def modelfit(alg, x,y, xte,yte, predictors, useTrainCV=True, cv_folds=5, early_stopping_rounds=50):
     if useTrainCV:
@@ -183,9 +58,51 @@ def modelfit(alg, x,y, xte,yte, predictors, useTrainCV=True, cv_folds=5, early_s
     #plt.ylabel('Feature Importance Score')
     return
 
+def train_ (trte_li,y_shuff = False):
+    print ('***********     Start The Training Process')
+    [xtr, xte, ytr, yte] = trte_li
+    predictors = [x for x in xtr.columns]
+    eval_set = [(xtr,ytr),(xte,yte)]
+    print(('***********     Pick LR & nEstimators'))
+    xgb1 = xgb_kl(
+        learning_rate=0.05,
+        n_estimators=200,
+        max_depth=5,
+        min_child_weight=1,
+        gamma=0,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        objective='binary:logistic',
+        nthread=4,
+        scale_pos_weight=0.41,
+        seed=27)
+    modelfit(xgb1, xtr,ytr,xte,yte,predictors)
+    exit()
+
+    do_plot = True
+    if do_plot:
+        final_model = xgb_kl(learning_rate=0.05, n_estimators=25000, max_depth=5,
+                                                 min_child_weight=1, gamma=3, subsample=0.6, colsample_bytree=0.6,
+                                                 objective='binary:logistic',seed=27,reg_alpha=38
+                             ,reg_lambda=38,scale_pos_weight=0.41)
+        if y_shuff:
+            ytr = myshuffle(ytr)
+        ytr = pdcol2np(ytr)
+        bst = final_model.fit(xtr, ytr, eval_set=eval_set,eval_metric='auc')
+        eval_result = bst.evals_result()
+        ypred = bst.predict(xte)
+        print(confusion_matrix(yte, ypred))
+        print(classification_report(yte, ypred))
+        print('The Accuracy is:  ', "{:.2%}".format(accuracy_score(yte, ypred)))
+        print('The Balanced Accuracy is:  ', "{:.2%}".format(balanced_accuracy_score(yte, ypred)))
+        gen_plot(eval_result)
+    exit()
+
 def extract_ds():
     pd_master = get_master_pd(args.src_file)
-    pd_master = myshuffle(pd_master)
+    if args.shuffle:
+        pd_master = myshuffle(pd_master)
+    print ('***********     Dataset loading was successful')
     return pd_master
 
 def gen_dummy(fr):
@@ -203,9 +120,12 @@ def gen_dummy(fr):
 
 def main():
     trte_pd= extract_ds()
-    #trte_pd = gen_dummy(trte_pd)
-    print ('***********     Dataset loading was successful')
-    trte_lst = prep_data(trte_pd)
-    train_ (trte_lst)
+    run_plan = dset (trte_pd)
+    xtrxtr = run_plan.xtr()
+    xtexte = run_plan.xte()
+    ytrytr = run_plan.ytr()
+    yteyte = run_plan.yte()
+    print ()
+    train_ (run_plan)
 if __name__ == "__main__":
     main()

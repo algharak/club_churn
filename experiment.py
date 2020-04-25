@@ -1,6 +1,74 @@
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import KFold, train_test_split, GridSearchCV,validation_curve,learning_curve
+from args_pg import parse_args
+args = parse_args()
+from transform import *
+from utils import *
 
+
+'''
+def add (x,y,c=2):
+    return 2*x+3*y+4*c
+
+par = {'x':18,'y':0,'c':15}
+par = {'x':18,'y':0}
+
+print (add(**par))
+
+'''
+class dset():
+    def __init__(self,frm,clip=False,clip_size=20,shuffle=True):
+        self.labels = frm.columns[-1]
+        self.frm = frm
+        nufrm = self.frm.copy
+        if clip:
+            nufrm = self.frm.head(clip_size)
+        if shuffle:
+            nufrm = myshuffle(nufrm)
+        self.split_xy(nufrm)
+    def xtr (self,stdiz=True,np = False):
+        x = self.xtra
+        if stdiz:
+            x = procss(x)
+        if np:
+            x = pdcol2np(x)
+        self.xtr = x
+        return x
+    def xte (self,stdiz=True,np = False):
+        x=self.xtes
+        if stdiz:
+            x = procss(x)
+        if np:
+            x = pdcol2np(x)
+        self.xte = x
+        return x
+    def yte (self,stdiz=True,np = False):
+        y = self.ytes
+        if stdiz:
+            y = procss(y)
+        if np:
+            y = pdcol2np(y)
+        self.yte = y
+        return y
+    def ytr (self,stdiz=True,np = True):
+        y = self.ytra
+        if stdiz:
+            y = procss(y)
+        if np:
+            y = pdcol2np(y)
+        self.ytr = y
+        return y
+    def split_xy(self,f):
+        y = f[[self.labels]]
+        x = f.drop(self.labels, axis=1)
+        self.xtra, self.xtes, self.ytra, self.ytes = train_test_split(x, y, test_size=args.trte_split, random_state=42)
+
+
+def xtr (d):
+    return d.xtr()
+
+'''
 list = ['rmse','rmsle']
 mydict=dict()
 for item in list:
@@ -10,9 +78,7 @@ for item in list:
                   'title': item}
 
 print (mydict.items())
-
-'''
-
+  x = procss(fr.drop(labels, axis=1))
 from sklearn.preprocessing import StandardScaler,MinMaxScaler,LabelEncoder
 le = LabelEncoder()
 

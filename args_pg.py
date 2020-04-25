@@ -37,3 +37,61 @@ def parse_args():
 
     return parser.parse_args()
 
+parser.add_argument("--max_depth", type=int, default=5)
+parser.add_argument("--learning_rate", type=float, default=0.25)
+parser.add_argument("--objective", type=str, default='binary:logistic')
+parser.add_argument("--n_estimators", type=int, default=100)
+parser.add_argument("--objective=", type=str, default='binary:logistic')
+parser.add_argument("--booster", type=str, default='dart')
+parser.add_argument("--gamma", type=float, default=0.1)
+
+parser.add_argument("--min_child_weight", type=float, default=1)
+parser.add_argument("--subsample", type=float, default=1)
+
+parser.add_argument("--trte_split", type=float, default=0.25)
+parser.add_argument("--trte_split", type=int, default=0.25)
+
+
+'''
+
+#sklearn XGBModel
+max_depth=5,
+learning_rate=0.05,
+objective='binary:logistic'
+n_estimators
+booster 'dart'
+gamma=0,
+min_child_weight=1,
+subsample=0.8,
+colsample_bytree=0.8,
+reg_alpha
+reg_lambda
+scale_pos_weight
+#fit
+eval_set
+eval_metric
+early_stopping_rounds
+#predict
+
+
+#xgboost.DMatrix
+label
+feature_names
+
+
+
+
+
+
+nthread=4,
+scale_pos_weight=0.41
+seed=27
+
+#xgb
+
+
+
+num_round =
+reg_lambda
+reg_alpha
+'''
