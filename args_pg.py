@@ -6,7 +6,7 @@ def parse_args():
                         './dataset/club_churn_source.csv')
     parser.add_argument("--shuffle", type=int, default=2)
     parser.add_argument("--plt_learn_cv", type=bool, default=True)
-    parser.add_argument("--trte_split", type=float, default=0.3)
+    parser.add_argument("--trte_split", type=float, default=0.25)
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--Kfolds", type=int, default=1)
     parser.add_argument("--xgb_gs_param", type=dict,default={
@@ -22,10 +22,10 @@ def parse_args():
                         'do_train': 'xgb.train',
                         'do_cv':   'xgb.cv',
                         'get_dataset': 'xgb.DMatrix',
-                        'rounds': 50,
+                        'rounds': 500,
                         'param': {'booster_': 'dart','max_depth':20,                                         'learning_rate':0.01,
                         'objective':'binary:logistic'},'gamma': 10,
-                        'n_estimators': 6000,
+                        'n_estimators': 60000,
                         'eval_metric': ['logloss'],
                             'min_child_weight_':1,
                             'subsample_':0.8,
@@ -34,4 +34,6 @@ def parse_args():
                             'ntread_':4,
                             'reg_alpha_': 5,'reg_lambd_': 5})
 
+
     return parser.parse_args()
+
