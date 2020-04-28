@@ -1,19 +1,8 @@
 from args_pg import parse_args
 args = parse_args()
-import pandas as pd
-from sklearn.utils  import shuffle
-from transform import transform_,procss
-import pickle
-import xgboost as xgb
 import numpy as np
-from sklearn.model_selection import KFold, train_test_split, GridSearchCV,validation_curve,learning_curve
 from matplotlib import pyplot
-from sklearn.metrics import confusion_matrix, mean_squared_error,accuracy_score,classification_report
-from numpy import loadtxt
-from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-import matplotlib.pyplot as plt
+
 
 def flatten_list (l):
     return [item for sublist in l for item in sublist]
@@ -31,6 +20,7 @@ def gen_plot(dict):
     pyplot.show()
     return
 
+'''
     for plot in plots:
         tr_vs_te.append(plot)
         tr_te_error.append([loss for loss in plot[1].keys()])
@@ -52,3 +42,6 @@ def gen_plot(dict):
 
         #plt.style.use('ggplot')
     return
+
+
+'''

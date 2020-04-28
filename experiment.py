@@ -18,10 +18,11 @@ print (add(**par))
 
 '''
 class dset():
-    def __init__(self,frm,clip=False,clip_size=20,shuffle=True):
+    def __init__(self,frm,clip=False,clip_size=60,shuffle=True):
         self.labels = frm.columns[-1]
+        self.predictors = frm.columns[0:-1]
         self.frm = frm
-        nufrm = self.frm.copy
+        nufrm = self.frm.copy()
         if clip:
             nufrm = self.frm.head(clip_size)
         if shuffle:
@@ -43,10 +44,14 @@ class dset():
             x = pdcol2np(x)
         self.xte = x
         return x
-    def yte (self,stdiz=True,np = False):
+    def yte (self,stdiz=True,np = True,yshuff = False):
         y = self.ytes
+        y = y.reset_index(drop=True)
+        if yshuff:
+            y = myshuffle(y)
         if stdiz:
-            y = procss(y)
+            y = procss(y).astype(bool)
+            y=~y
         if np:
             y = pdcol2np(y)
         self.yte = y
@@ -54,7 +59,8 @@ class dset():
     def ytr (self,stdiz=True,np = True):
         y = self.ytra
         if stdiz:
-            y = procss(y)
+            y = procss(y).astype(bool)
+            y = ~y
         if np:
             y = pdcol2np(y)
         self.ytr = y
