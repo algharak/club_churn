@@ -30,8 +30,8 @@ def parse_args():
                             #"reg_lambda":0.9,
                             #"scale_pos_weight":0.41
                                                        })
-    parser.add_argument('--maxdepth_grid',type = list, default = [2,4,6,8,10,20,40,80])
-    parser.add_argument('--estimator_grid',type = list, default = [10,15,20,25,40,60,80,100,120])
+    parser.add_argument('--maxdepth_grid',type = list, default = [2,8,20,80])
+    parser.add_argument('--estimator_grid',type = list, default = [10,15,20,25,40])
     return parser.parse_args()
 
 args=argparse

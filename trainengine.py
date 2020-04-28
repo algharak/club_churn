@@ -10,11 +10,17 @@ import numpy as np
 from sklearn.model_selection import KFold, train_test_split, GridSearchCV,validation_curve,learning_curve,StratifiedKFold
 from sklearn import metrics
 from sklearn.metrics import confusion_matrix, balanced_accuracy_score,accuracy_score,classification_report,precision_score,recall_score
-from gen_plots import gen_plot
+from gen_plots import *
 from xgboost import XGBClassifier as xgb_kl
 import matplotlib.pylab as plt
 import random
 from experiment import *
+import hyperopt as hp
+from hyperopt import fmin
+from hyperopt import tpe,Trials
+from functools import partial
+
+
 
 def get_master_pd(path):
     return pd.read_csv(path)
@@ -29,19 +35,24 @@ def extract_cmds (e):
     return do_train,do_cv,rounds,params, get_dataset
 
 
-
+###########################################################################################################################
 def train_ (scn):
     print ('***********     Start The Training Process')
     xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte(); predictors = scn.predictors
     eval_set = [(xtr,ytr),(xte,yte)]
     print(('***********     Pick LR & nEstimators'))
-
-    mod_param = dict(objective= 'binary:logistic',booster='dart',learning_rate=0.1)
-    xgbkl = xgb_kl(**mod_param)
-    grid_param = dict(max_depth=args.maxdepth_grid,n_estimators=args.estimator_grid)
-    best_param = do_grid_srch (xgbkl,xtr,ytr,grid_param)
-    mod_param.update(best_param)
-    best_mod = xgb_kl(**mod_param).fit(xtr, ytr, eval_set=eval_set,eval_metric='rmse')
+    MAX_EVALS = 2
+    # Trials object to track progress
+    bayes_trials = Trials()
+    fmin_objective = partial(objective, xt=xtr,yt=ytr)
+    best_param = fmin(fn=fmin_objective,space=space, algo=tpe.suggest,
+                max_evals=MAX_EVALS, trials=bayes_trials)
+    print()
+    #mod_param = dict(objective= 'binary:logistic',booster='dart',learning_rate=0.1)
+    mod = xgb_kl(objective='binary:logistic')
+    best_mod = mod(**best_param).fit(xtr, ytr, eval_set=eval_set,eval_metric='rmse')
+    best_mod = xgb_kl(objective='binary:logistic',**best_param).fit(xtr, ytr, eval_set=eval_set,eval_metric='rmse')
+    #best_mod = xgb_kl(best_param,objective='binary:logistic').fit(xtr, ytr, eval_set=eval_set,eval_metric='rmse')
     print()
     eval_result = best_mod.evals_result()
     ypred = best_mod.predict(xte)
@@ -62,6 +73,7 @@ def do_grid_srch (mod,x,y,param):
     print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
     return grid_result.best_params_
 
+###########################################################################################################################
 
 def extract_ds():
     pd_master = get_master_pd(args.src_file)

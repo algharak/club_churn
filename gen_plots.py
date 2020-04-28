@@ -2,7 +2,11 @@ from args_pg import parse_args
 args = parse_args()
 import numpy as np
 from matplotlib import pyplot
-
+from hyperopt import STATUS_OK,hp
+import xgboost as xgb
+from experiment import *
+import hyperopt.pyll.base
+from hyperopt.pyll.base import scope
 
 def flatten_list (l):
     return [item for sublist in l for item in sublist]
@@ -20,28 +24,25 @@ def gen_plot(dict):
     pyplot.show()
     return
 
-'''
-    for plot in plots:
-        tr_vs_te.append(plot)
-        tr_te_error.append([loss for loss in plot[1].keys()])
-        tr_te_data.append(plot[1].values())
+def objective(params,xt,yt):
+    tr_set = xgb.DMatrix(xt,label=yt)
+    cv_results = xgb.cv(params, tr_set, nfold=6, num_boost_round=100,
+                        early_stopping_rounds=10, metrics='rmse', seed=50)
+    best_score = max(cv_results['test-rmse-mean'])
+    loss = 1 - best_score
+    return {'loss': loss, 'params': params, 'status': STATUS_OK}
 
-        print()
-    for i,j in results.items():
-        for lossname, data in j.items():
-            lossname = j.keys()
-            tr_data = j.values()
-        te_data = j.values
-        fig, ax = pyplot.subplots(figsize=(10, 10))
-        ylab = lossname
-    exit(0)
-        #ax.plot(x_axis,tr_data, label='Train')
-        #ax.plot(x_axis,te_data, label='Test')
+space = {
+    'class_weight': hp.choice('class_weight', [None, 'balanced']),
+    'booster': hp.choice('booster',['gbtree','dart']),
+    'max_depth': scope.int(hp.quniform('max_depth', 2,100,2)),
+    'eta': hp.uniform('eta', 1e-4, 0.9),
+    'gamma': hp.uniform('gamma', 1e-4, 32),
+    'min_child_weight': hp.uniform('min_child_weight',1e-6 ,32),
 
+    'subsample': hp.uniform('subsample', 0.5,1),
+    'colsample_bytree': hp.loguniform('colsample_by_tree', -10, 0),
+    'alpha': hp.uniform('alpha', 1e-6, 2.0),
+    'lambda': hp.uniform('lambda',1e-6, 2.0),
 
-
-        #plt.style.use('ggplot')
-    return
-
-
-'''
+}
