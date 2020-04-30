@@ -12,7 +12,9 @@ from sklearn import metrics
 from sklearn.metrics import confusion_matrix, balanced_accuracy_score,accuracy_score,classification_report,precision_score,recall_score
 from gen_plots import *
 from xgboost import XGBClassifier as xgb_kl
-import matplotlib.pylab as plt
+from xgboost import plot_importance
+
+
 import random
 from experiment import *
 import hyperopt as hp
@@ -41,19 +43,22 @@ def train_ (scn):
     xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte(); predictors = scn.predictors
     eval_set = [(xtr,ytr),(xte,yte)]
     print(('***********     Pick LR & nEstimators'))
-    MAX_EVALS = 2
+
+
+    MAX_EVALS =2000
     # Trials object to track progress
     bayes_trials = Trials()
-    fmin_objective = partial(objective, xt=xtr,yt=ytr)
+    fmin_objective = partial(objective, xt=xtr,yt=ytr,xe=xte,ye=yte)
     best_param = fmin(fn=fmin_objective,space=space, algo=tpe.suggest,
                 max_evals=MAX_EVALS, trials=bayes_trials)
-    print()
-    #mod_param = dict(objective= 'binary:logistic',booster='dart',learning_rate=0.1)
-    mod = xgb_kl(objective='binary:logistic')
-    best_mod = mod(**best_param).fit(xtr, ytr, eval_set=eval_set,eval_metric='rmse')
-    best_mod = xgb_kl(objective='binary:logistic',**best_param).fit(xtr, ytr, eval_set=eval_set,eval_metric='rmse')
-    #best_mod = xgb_kl(best_param,objective='binary:logistic').fit(xtr, ytr, eval_set=eval_set,eval_metric='rmse')
-    print()
+    print('best params:   ',best_param)
+    best_param['max_depth']= int(best_param['max_depth'])
+    best_param['n_estimators']= int(best_param['n_estimators'])
+    mod = xgb_kl(**best_param)
+    #mod = xgb_kl(**best_param,booster='dart')
+    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric='auc')
+    plot_importance(best_mod)
+    pyplot.show()
     eval_result = best_mod.evals_result()
     ypred = best_mod.predict(xte)
     print(confusion_matrix(yte, ypred))
@@ -66,7 +71,7 @@ def train_ (scn):
     exit()
 
 def do_grid_srch (mod,x,y,param):
-    kfold = StratifiedKFold(n_splits=8, shuffle=True, random_state=7)
+    kfold = StratifiedKFold(n_splits=4, shuffle=True, random_state=7)
     grid_search = GridSearchCV(mod, param, scoring="recall", n_jobs=-1, cv=kfold, verbose=1)
     grid_result = grid_search.fit(x,y)
     # summarize results
@@ -74,6 +79,7 @@ def do_grid_srch (mod,x,y,param):
     return grid_result.best_params_
 
 ###########################################################################################################################
+
 
 def extract_ds():
     pd_master = get_master_pd(args.src_file)

@@ -4,7 +4,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--src_file", type=str, default=
                         './dataset/club_churn_source.csv')
-    parser.add_argument("--shuffle", type=int, default=2)
+    parser.add_argument("--shuffle", type=int, default=5)
     parser.add_argument("--plt_learn_cv", type=bool, default=True)
     parser.add_argument("--trte_split", type=float, default=0.2)
     parser.add_argument("--epochs", type=int, default=5)

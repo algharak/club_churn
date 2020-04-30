@@ -40,6 +40,7 @@ scale_ = {'std_sc': std_scaler.fit_transform,
 impute_ = {'avg_imp':avg_imp,
            'most_f_imp':most_f_imp,
            'numerize':numerize}
+
 col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
             'MEMBERSHIP_TERM_YEARS':[[None],['std_sc']],
             'ANNUAL_FEES':[[None],['std_sc']],
@@ -50,7 +51,7 @@ col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
               'MEMBERSHIP_PACKAGE':[[None],[None]],
               'MEMBER_AGE_AT_ISSUE':[[None],['std_sc']],
               'ADDITIONAL_MEMBERS':[[None],[None]],
-              'PAYMENT_MODE':[[None],['lbl_enc_sc']],
+              'PAYMENT_MODE':[[None],[None]],
               'START_DATE':[['numerize'],['std_sc']],
               'INDEX':[[None],[None]],
               'MEMBERSHIP_NUMBER':[[None],[None]],
@@ -58,6 +59,7 @@ col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
               'END_DATE':[[None],[None]],
               'Dummy':[[None],['lbl_enc_sc']]}
 
+'''
 col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
             'MEMBERSHIP_TERM_YEARS':[[None],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
             'ANNUAL_FEES':[[None],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
@@ -75,6 +77,8 @@ col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
               'AGENT_CODE':[[None],[None]],
               'END_DATE':[[None],[None]]}
 
+
+'''
 
 
 

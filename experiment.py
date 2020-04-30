@@ -52,6 +52,7 @@ class dset():
         if stdiz:
             y = procss(y).astype(bool)
             y=~y
+            print ('dist of yte is:', y.sum()/y.shape[0])
         if np:
             y = pdcol2np(y)
         self.yte = y
@@ -61,6 +62,7 @@ class dset():
         if stdiz:
             y = procss(y).astype(bool)
             y = ~y
+            print ('dist of yte is:', y.sum()/y.shape[0])
         if np:
             y = pdcol2np(y)
         self.ytr = y
@@ -69,7 +71,6 @@ class dset():
         y = f[[self.labels]]
         x = f.drop(self.labels, axis=1)
         self.xtra, self.xtes, self.ytra, self.ytes = train_test_split(x, y, test_size=args.trte_split, random_state=42)
-
 
 def xtr (d):
     return d.xtr()
