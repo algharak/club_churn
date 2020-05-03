@@ -45,7 +45,7 @@ def train_ (scn):
     print(('***********     Pick LR & nEstimators'))
 
 
-    MAX_EVALS =1
+    MAX_EVALS =40
     # Trials object to track progress
     bayes_trials = Trials()
     fmin_objective = partial(objective, xt=xtr,yt=ytr,xe=xte,ye=yte)
@@ -55,7 +55,7 @@ def train_ (scn):
     best_param['max_depth']= int(best_param['max_depth'])
     best_param['n_estimators']= int(best_param['n_estimators'])
     mod = xgb_kl(**best_param)
-    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall)
+    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
     plot_importance(best_mod)
     pyplot.show()
     eval_result = best_mod.evals_result()

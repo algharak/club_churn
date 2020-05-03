@@ -6,19 +6,8 @@ args = parse_args()
 from transform import *
 from utils import *
 
-
-'''
-def add (x,y,c=2):
-    return 2*x+3*y+4*c
-
-par = {'x':18,'y':0,'c':15}
-par = {'x':18,'y':0}
-
-print (add(**par))
-
-'''
 class dset():
-    def __init__(self,frm,clip=False,clip_size=60,shuffle=True):
+    def __init__(self,frm,clip=False,clip_size=8000,shuffle=True):
         self.labels = frm.columns[-1]
         self.predictors = frm.columns[0:-1]
         self.frm = frm
@@ -62,7 +51,7 @@ class dset():
         if stdiz:
             y = procss(y).astype(bool)
             y = ~y
-            print ('dist of yte is:', y.sum()/y.shape[0])
+            print ('dist of ytr is:', y.sum()/y.shape[0])
         if np:
             y = pdcol2np(y)
         self.ytr = y

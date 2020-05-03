@@ -40,7 +40,7 @@ scale_ = {'std_sc': std_scaler.fit_transform,
 impute_ = {'avg_imp':avg_imp,
            'most_f_imp':most_f_imp,
            'numerize':numerize}
-
+'''
 col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
             'MEMBERSHIP_TERM_YEARS':[[None],['std_sc']],
             'ANNUAL_FEES':[[None],['std_sc']],
@@ -58,28 +58,43 @@ col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
               'AGENT_CODE':[[None],[None]],
               'END_DATE':[[None],[None]],
               'Dummy':[[None],['lbl_enc_sc']]}
-
 '''
-col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
-            'MEMBERSHIP_TERM_YEARS':[[None],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
-            'ANNUAL_FEES':[[None],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
-              'MEMBER_MARITAL_STATUS':[['most_f_imp'],['lbl_enc_sc']],
-              'MEMBER_GENDER':[['most_f_imp'],['lbl_enc_sc']],
-              'MEMBER_ANNUAL_INCOME':[['avg_imp'],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
-              'MEMBER_OCCUPATION_CD':[[None],['lbl_enc_sc']],
-              'MEMBERSHIP_PACKAGE':[[None],['lbl_enc_sc']],
-              'MEMBER_AGE_AT_ISSUE':[[None],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
-              'ADDITIONAL_MEMBERS':[[None],['lbl_enc_sc']],
-              'PAYMENT_MODE':[[None],['lbl_enc_sc']],
-              'START_DATE':[['numerize'],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']],
-              'INDEX':[[None],[None]],
-              'MEMBERSHIP_NUMBER':[[None],[None]],
-              'AGENT_CODE':[[None],[None]],
-              'END_DATE':[[None],[None]]}
-
-
-'''
-
+#--------------------------------------------------------------------------------------------------
+col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']]}
+#--------------------------------------------------------------------------------------------------
+col_assign.update({'MEMBERSHIP_TERM_YEARS':[[None],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']]})
+#col_assign.update({'MEMBERSHIP_TERM_YEARS':[[None],['std_sc']]})
+#--------------------------------------------------------------------------------------------------
+col_assign.update({'ANNUAL_FEES':[[None],['std_sc']]})
+#--------------------------------------------------------------------------------------------------
+col_assign.update({'MEMBER_MARITAL_STATUS':[['most_f_imp'],['lbl_enc_sc']]})
+#--------------------------------------------------------------------------------------------------
+col_assign.update({'MEMBER_GENDER':[['most_f_imp'],['lbl_enc_sc']]})
+#--------------------------------------------------------------------------------------------------
+#col_assign.update({'MEMBER_ANNUAL_INCOME':[['avg_imp'],['std_sc']]})
+col_assign.update({'MEMBER_ANNUAL_INCOME':[['avg_imp'],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']]})
+#--------------------------------------------------------------------------------------------------
+col_assign.update({'MEMBER_OCCUPATION_CD':[[None],['lbl_enc_sc']]})
+#--------------------------------------------------------------------------------------------------
+#col_assign.update({'MEMBERSHIP_PACKAGE':[[None],[None]]})
+col_assign.update({'MEMBERSHIP_PACKAGE':[[None],['lbl_enc_sc']]})
+#--------------------------------------------------------------------------------------------------
+#col_assign.update({'MEMBER_AGE_AT_ISSUE':[[None],['std_sc']]})
+col_assign.update({'MEMBER_AGE_AT_ISSUE':[[None],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']]})
+#--------------------------------------------------------------------------------------------------
+col_assign.update({'ADDITIONAL_MEMBERS':[[None],['lbl_enc_sc']]})
+#--------------------------------------------------------------------------------------------------
+col_assign.update({'PAYMENT_MODE':[[None],['lbl_enc_sc']]})
+#--------------------------------------------------------------------------------------------------
+#col_assign.update({'START_DATE':[['numerize'],['std_sc']]})
+col_assign.update({'START_DATE':[['numerize'],['std_sc','mm_sc','rob_sc','k_bin_disc_sc']]})
+#col_assign.update({'START_DATE':[['numerize'],['std_sc','mm_sc']]})
+#--------------------------------------------------------------------------------------------------
+col_assign.update({'INDEX':[[None],[None]]})
+col_assign.update({'MEMBERSHIP_NUMBER':[[None],[None]]})
+col_assign.update({'AGENT_CODE':[[None],[None]]})
+col_assign.update({'END_DATE':[[None],[None]]})
+#--------------------------------------------------------------------------------------------------
 
 
 impute_ = {'avg_imp':avg_imp,
@@ -103,16 +118,18 @@ def procss_scale (clm,cmd,frm):
 
 def procss (frm):
     out_frame = pd.DataFrame()
+    active_cols = list(col_assign.keys())
     colnames = frm.columns.values.tolist()
     for inx in colnames:
-        imput_cmd = col_assign[inx][0]
-        scale_cmds = col_assign[inx][1]
-        col = frm [[inx]]
-        if imput_cmd != [None]:
-            col     =   procss_impute(col,imput_cmd)
-        if scale_cmds !=[None]:
-            for scale_cmd in scale_cmds:
-                out_frame = procss_scale(col,scale_cmd,out_frame)
+        if inx in active_cols:
+            imput_cmd = col_assign[inx][0]
+            scale_cmds = col_assign[inx][1]
+            col = frm [[inx]]
+            if imput_cmd != [None]:
+                col     =   procss_impute(col,imput_cmd)
+            if scale_cmds !=[None]:
+                for scale_cmd in scale_cmds:
+                    out_frame = procss_scale(col,scale_cmd,out_frame)
     return out_frame
 
 def transform_(trte_list):
@@ -123,5 +140,6 @@ def transform_(trte_list):
             tr_te_pair.extend([procss(frm)])
         tr_te_plist.append(tr_te_pair)
     return tr_te_plist
+
 
 
