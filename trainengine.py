@@ -45,7 +45,7 @@ def train_ (scn):
     print(('***********     Pick LR & nEstimators'))
 
 
-    MAX_EVALS =2000
+    MAX_EVALS =1
     # Trials object to track progress
     bayes_trials = Trials()
     fmin_objective = partial(objective, xt=xtr,yt=ytr,xe=xte,ye=yte)
@@ -55,8 +55,7 @@ def train_ (scn):
     best_param['max_depth']= int(best_param['max_depth'])
     best_param['n_estimators']= int(best_param['n_estimators'])
     mod = xgb_kl(**best_param)
-    #mod = xgb_kl(**best_param,booster='dart')
-    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric='auc')
+    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall)
     plot_importance(best_mod)
     pyplot.show()
     eval_result = best_mod.evals_result()
@@ -70,8 +69,16 @@ def train_ (scn):
     gen_plot(eval_result)
     exit()
 
+def metric_recall(y_pred, y_true):
+    labels = y_true.get_label() # obtain true labels
+    preds = y_pred > 0.5 # obtain predicted values
+    preds=preds.astype(np.int)
+    recall = 1-recall_score(labels,preds)
+    return 'recall', recall
+
 def do_grid_srch (mod,x,y,param):
     kfold = StratifiedKFold(n_splits=4, shuffle=True, random_state=7)
+    kfold = KFold(n_splits=4, shuffle=True, random_state=7)
     grid_search = GridSearchCV(mod, param, scoring="recall", n_jobs=-1, cv=kfold, verbose=1)
     grid_result = grid_search.fit(x,y)
     # summarize results
