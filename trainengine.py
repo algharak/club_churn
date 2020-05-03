@@ -14,15 +14,12 @@ from gen_plots import *
 from xgboost import XGBClassifier as xgb_kl
 from xgboost import plot_importance
 
-
 import random
 from experiment import *
 import hyperopt as hp
 from hyperopt import fmin
 from hyperopt import tpe,Trials
 from functools import partial
-
-
 
 def get_master_pd(path):
     return pd.read_csv(path)
@@ -40,20 +37,18 @@ def extract_cmds (e):
 ###########################################################################################################################
 def train_ (scn):
     print ('***********     Start The Training Process')
-    xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte(); predictors = scn.predictors
+    xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte()
     eval_set = [(xtr,ytr),(xte,yte)]
-    print(('***********     Pick LR & nEstimators'))
-
-
-    MAX_EVALS =40
-    # Trials object to track progress
+    print(('***********     Begin Grid Search for HPs'))
     bayes_trials = Trials()
     fmin_objective = partial(objective, xt=xtr,yt=ytr,xe=xte,ye=yte)
     best_param = fmin(fn=fmin_objective,space=space, algo=tpe.suggest,
-                max_evals=MAX_EVALS, trials=bayes_trials)
-    print('best params:   ',best_param)
-    best_param['max_depth']= int(best_param['max_depth'])
-    best_param['n_estimators']= int(best_param['n_estimators'])
+                max_evals=args.max_eval, trials=bayes_trials)
+    print('Best Params:   ',best_param)
+    #best_param['max_depth']= int(best_param['max_depth'])
+    #best_param['n_estimators']= int(best_param['n_estimators'])
+    #best_param.update(args.base_param)
+    best_param.update(args.base_param)
     mod = xgb_kl(**best_param)
     best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
     plot_importance(best_mod)

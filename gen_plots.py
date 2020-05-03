@@ -33,7 +33,10 @@ def gen_plot(dict):
     return
 
 def objective(params,xt,yt,xe,ye):
-    model = xgb_kl(**params)
+    full_param = {**params,**args.base_param}
+    #params.update(args.base_param)
+
+    model = xgb_kl(**full_param)
     #kfold = KFold(n_splits=4)
     #kfold = StratifiedKFold(n_splits=4)
     kfold = StratifiedShuffleSplit(n_splits=4)
@@ -55,21 +58,16 @@ def test_ (mod,x,y,**par):
     return
 
 
-space = {'objective': 'binary:logistic'}
-#space.update({'n_estimators':400})
-space.update({'n_estimators':scope.int(hp.quniform('n_estimators', 600,601,1))})
-space.update({'max_depth': scope.int(hp.quniform('max_depth', 2,5,2))})
-space.update({'learning_rate': hp.loguniform("learning_rate", np.log(0.1), np.log(0.101))})
-#space.update({'learning_rate': hp.loguniform('learning_rate', np.log(1e-3), np.log(0.99))})
-#space.update({'gamma': hp.loguniform('gamma', np.log(0.31), np.log(.42))})
-#space.update({'min_child_weight': hp.loguniform('min_child_weight',np.log(1e-2), np.log(5e-1))})
-#space.update({'subsample': hp.uniform('subsample', 0.5,1.0)})
-space.update({'colsample_bytree': hp.uniform('colsample_bytree',0.7,0.701)})
-space.update({'reg_alpha': hp.loguniform('reg_alpha', np.log(0.01), np.log(0.010001))})
-#space.update({'reg_lambda': hp.loguniform('reg_lambda',np.log(1e-6), np.log(2))})
+
+#space={'min_child_weight': hp.choice('min_child_weight',[5,9])}
+space={'min_child_weight': scope.int(hp.quniform('min_child_weight',1,5,q=1))}
+#space={'min_child_weight': hp.choice('min_child_weight',[11,2,3,1,4])}
+
+
 
 
 '''
+scope.int(hp.quiniform('my_param', 1, 100, q=1))
 #'scale_pos_weight': scope.txt(hp.choice('scale_pos_weight', [0.5,0.6])),
     #'booster': hp.choice('booster',['gbtree','dart']),
     # 'n_estimators':scope.int(hp.uniform('n_estimators', 8,128,3)),

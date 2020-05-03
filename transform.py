@@ -40,25 +40,7 @@ scale_ = {'std_sc': std_scaler.fit_transform,
 impute_ = {'avg_imp':avg_imp,
            'most_f_imp':most_f_imp,
            'numerize':numerize}
-'''
-col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']],
-            'MEMBERSHIP_TERM_YEARS':[[None],['std_sc']],
-            'ANNUAL_FEES':[[None],['std_sc']],
-              'MEMBER_MARITAL_STATUS':[['most_f_imp'],[None]],
-              'MEMBER_GENDER':[['most_f_imp'],[]],
-              'MEMBER_ANNUAL_INCOME':[['avg_imp'],['std_sc']],
-              'MEMBER_OCCUPATION_CD':[[None],[None]],
-              'MEMBERSHIP_PACKAGE':[[None],[None]],
-              'MEMBER_AGE_AT_ISSUE':[[None],['std_sc']],
-              'ADDITIONAL_MEMBERS':[[None],[None]],
-              'PAYMENT_MODE':[[None],[None]],
-              'START_DATE':[['numerize'],['std_sc']],
-              'INDEX':[[None],[None]],
-              'MEMBERSHIP_NUMBER':[[None],[None]],
-              'AGENT_CODE':[[None],[None]],
-              'END_DATE':[[None],[None]],
-              'Dummy':[[None],['lbl_enc_sc']]}
-'''
+
 #--------------------------------------------------------------------------------------------------
 col_assign = {'MEMBERSHIP_STATUS':[[None],['lbl_enc_sc']]}
 #--------------------------------------------------------------------------------------------------
