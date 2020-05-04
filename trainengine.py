@@ -45,10 +45,8 @@ def train_ (scn):
     best_param = fmin(fn=fmin_objective,space=space, algo=tpe.suggest,
                 max_evals=args.max_eval, trials=bayes_trials)
     print('Best Params:   ',best_param)
-    #best_param['max_depth']= int(best_param['max_depth'])
-    #best_param['n_estimators']= int(best_param['n_estimators'])
-    #best_param.update(args.base_param)
     best_param.update(args.base_param)
+    aaa=best_param
     mod = xgb_kl(**best_param)
     best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
     plot_importance(best_mod)
