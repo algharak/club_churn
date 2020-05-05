@@ -19,12 +19,10 @@ def parse_args():
     baseparam.update(dict(subsample=0.6))
     baseparam.update(dict(colsample_bytree=0.7))
     parser.add_argument("--base_param", type=dict, default=baseparam )
-    parser.add_argument("--max_eval", type=int, default=3)
-    parser.add_argument("--max_eval", type=int, default=160)
+    parser.add_argument("--max_eval", type=int, default=20)
+    return parser.parse_args()
 
-    args=argparse
-    return args
-
+args=argparse
 '''
 Notes
 scale_pos_weights: be very carfull. large numbers srew things up.  i used the formaula r
