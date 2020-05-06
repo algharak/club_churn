@@ -1,25 +1,12 @@
 from args_pg import args
-
-import pandas as pd
-from sklearn.utils  import shuffle
-from transform import transform_,procss
-from utils import myshuffle
-import pickle
-import xgboost as xgb
-import numpy as np
-from sklearn.model_selection import KFold, train_test_split, GridSearchCV,validation_curve,learning_curve,StratifiedKFold
-from sklearn import metrics
 from sklearn.metrics import confusion_matrix, balanced_accuracy_score,accuracy_score,classification_report,precision_score,recall_score
 from gen_plots import *
 from xgboost import XGBClassifier as xgb_kl
 from xgboost import plot_importance
-
 import random
 from experiment import *
-import hyperopt as hp
-from hyperopt import fmin
-from hyperopt import tpe,Trials
-from functools import partial
+from hyper_opt import *
+
 
 def get_master_pd(path):
     return pd.read_csv(path)
@@ -33,21 +20,13 @@ def extract_cmds (e):
     do_cv = eval(eval('args.'+e)['do_cv'])
     return do_train,do_cv,rounds,params, get_dataset
 
-
-###########################################################################################################################
 def train_ (scn):
     print ('***********     Start The Training Process')
     xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte()
     eval_set = [(xtr,ytr),(xte,yte)]
-    print(('***********     Begin Grid Search for HPs'))
-    bayes_trials = Trials()
-    fmin_objective = partial(objective, xt=xtr,yt=ytr,xe=xte,ye=yte)
-    best_param = fmin(fn=fmin_objective,space=space, algo=tpe.suggest,
-                max_evals=args.max_eval, trials=bayes_trials)
-    print('Best Params:   ',best_param)
-    best_param.update(args.base_param)
-    aaa=best_param
-    mod = xgb_kl(**best_param)
+    best_par,best_val=tune_params (scn)
+    print ('***********     Perform Test')
+    mod = xgb_kl(**best_par)
     best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
     plot_importance(best_mod)
     pyplot.show()

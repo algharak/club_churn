@@ -6,6 +6,10 @@ args = parse_args()
 from transform import *
 from utils import *
 
+
+
+
+
 class dset():
     def __init__(self,frm,clip=False,clip_size=8000,shuffle=True):
         self.labels = frm.columns[-1]
@@ -61,10 +65,31 @@ class dset():
         x = f.drop(self.labels, axis=1)
         self.xtra, self.xtes, self.ytra, self.ytes = train_test_split(x, y, test_size=args.trte_split, random_state=42)
 
+'''
+
+class obj_ ():
+    def __init__(self,a,b):
+        self.a = a
+        self.b = b
+    #@classmethod
+    def ax_optim(self,n):
+        #full_param = {**par, **args.base_param}
+        #mod = xgb_kl(**full_param)
+        #kfold = StratifiedShuffleSplit(n_splits=4)
+        #cv_results = cross_val_score(mod, cls.xtr, cls.yte, cv=kfold, scoring='recall')
+        #loss = 1 - max(cv_results)
+        return self.a + self.b - n
+    def ax2 (self,j):
+        return self.ax_optim(j)
+
+xz = obj_(4,5)
+print (xz.ax_optim(99))
+qqq = xz.ax2
+print (qqq(2))
 def xtr (d):
     return d.xtr()
 
-'''
+
 list = ['rmse','rmsle']
 mydict=dict()
 for item in list:
