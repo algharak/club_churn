@@ -11,7 +11,6 @@ def parse_args():
     parser.add_argument("--Kfolds", type=int, default=1)
     #xgb params
     baseparam=dict(objective='binary:logistic')
-    #baseparam.update(dict(n_estimators=500))
     baseparam.update(dict(learning_rate=0.1))
     baseparam.update(dict(scale_pos_weight=1))
     #baseparam.update(dict(max_depth=4))
@@ -20,8 +19,7 @@ def parse_args():
     #baseparam.update(dict(subsample=0.6))
     #baseparam.update(dict(colsample_bytree=0.7))
     parser.add_argument("--base_param", type=dict, default=baseparam )
-    #Ax params
-    parser.add_argument("--max_eval", type=int, default=50)
+
     return parser.parse_args()
 
 args=argparse
