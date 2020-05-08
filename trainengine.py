@@ -24,10 +24,11 @@ def train_ (scn):
     print ('***********     Start The Training Process')
     xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte()
     eval_set = [(xtr,ytr),(xte,yte)]
-    best_par,best_val=tune_params (scn)
-    print ('***********     Perform Test')
-    mod = xgb_kl(**best_par)
-    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
+    mod = xgb_kl(**baseparam)
+    if args.en_hp_tune:
+        best_par,best_val=tune_params (scn)
+        mod = xgb_kl(**best_par)
+    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=True)
     plot_importance(best_mod)
     pyplot.show()
     eval_result = best_mod.evals_result()
