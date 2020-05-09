@@ -4,11 +4,14 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--src_file", type=str, default=
                         './dataset/club_churn_source.csv')
+    parser.add_argument("--plt_dir", type=str, default=
+    './plots')
     parser.add_argument("--shuffle", type=int, default=5)
     parser.add_argument("--plt_learn_cv", type=bool, default=True)
     parser.add_argument("--trte_split", type=float, default=0.2)
-    parser.add_argument("--epochs", type=int, default=5)
+    #parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--Kfolds", type=int, default=1)
+    parser.add_argument("--exp_rounds", type=int, default=10)
     # param baseline
     param_rng = []
     baseparam = dict(objective='binary:logistic')
@@ -17,9 +20,6 @@ def parse_args():
     parser.add_argument("--Ax_n_trials", type=int, default=10)
     baseparam.update(dict(n_estimators=50))
     # params
-
-
-
     # LR
     baseparam.update(dict(learning_rate=0.1))
     #lr_rng = {"name": "learning_rate","type": "range","bounds": [1e-3,0.9],"value_type": "float",'log_scale':True}
@@ -51,14 +51,14 @@ def parse_args():
     #param_rng.append(subsam_rng)
 
     # colsample
-    baseparam.update(dict(colsample_bytree=0.6))
-    #colsam_rng = {'name':'colsample_bytree',"type": "choice","values": [0.3,0.5,0.7,0.9],"value_type": "float",'log_scale':False}
-    #param_rng.append(colsam_rng)
+    #baseparam.update(dict(colsample_bytree=0.6))
+    colsam_rng = {'name':'colsample_bytree',"type": "choice","values": [0.3,0.5,0.7,0.9],"value_type": "float",'log_scale':False}
+    param_rng.append(colsam_rng)
 
     # reg_alpha
-    baseparam.update(dict(reg_alpha=0.01))
-    #reg_a_rng = {'name':'reg_alpha',"type": "range","bounds": [1e-3,0.9],"value_type": "float",'log_scale':True}
-    #param_rng.append(reg_a_rng)
+    #baseparam.update(dict(reg_alpha=0.01))
+    reg_a_rng = {'name':'reg_alpha',"type": "range","bounds": [1e-3,0.9],"value_type": "float",'log_scale':True}
+    param_rng.append(reg_a_rng)
 
     # Aggregation
     parser.add_argument('--base_param',type=dict,default=baseparam)

@@ -21,26 +21,34 @@ def extract_cmds (e):
     return do_train,do_cv,rounds,params, get_dataset
 
 def train_ (scn):
+
     print ('***********     Start The Training Process')
     xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte()
     eval_set = [(xtr,ytr),(xte,yte)]
-    mod = xgb_kl(**args.base_param)
-    if args.param_rng:
-        best_par,best_val=tune_params (scn)
-        mod = xgb_kl(**best_par)
-    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
-    plot_importance(best_mod)
-    #pyplot.show()
-    eval_result = best_mod.evals_result()
-    ypred = best_mod.predict(xte)
-    print(confusion_matrix(yte, ypred))
-    print(classification_report(yte, ypred))
-    print('The Accuracy is:  ', "{:.2%}".format(accuracy_score(yte, ypred)))
-    print('The Balanced Accuracy is:  ', "{:.2%}".format(balanced_accuracy_score(yte, ypred)))
-    print('The Precision Score is:  ', "{:.2%}".format(precision_score(yte, ypred)))
-    print('The Recall score is:  ', "{:.2%}".format(recall_score(yte, ypred)))
-    gen_plot(eval_result)
-    exit()
+    best_recall_store = 0
+    for round in range(args.exp_rounds):
+        mod = xgb_kl(**args.base_param)
+        if args.param_rng:
+            best_par,best_val=tune_params (scn)
+            mod = xgb_kl(**best_par)
+        best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
+        plot_importance(best_mod)
+        eval_result = best_mod.evals_result()
+        ypred = best_mod.predict(xte)
+        print(confusion_matrix(yte, ypred))
+        print(classification_report(yte, ypred))
+        print('The Accuracy is:  ', "{:.2%}".format(accuracy_score(yte, ypred)))
+        print('The Balanced Accuracy is:  ', "{:.2%}".format(balanced_accuracy_score(yte, ypred)))
+        print('The Precision Score is:  ', "{:.2%}".format(precision_score(yte, ypred)))
+        recall_scr = recall_score(yte, ypred)
+        print('The Recall score is:  ', "{:.2%}".format(recall_scr))
+        if recall_scr > best_recall_store:
+            print ('the best recall score so far is:  ', recall_scr)
+            print('the corresponding params are:  ', best_par)
+            best_recall_store = recall_scr
+        gen_plot(eval_result,best_par)
+    print ('***********Experiment Completed************')
+    return
 
 def metric_recall(y_pred, y_true):
     labels = y_true.get_label() # obtain true labels
