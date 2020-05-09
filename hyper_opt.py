@@ -7,52 +7,28 @@ from xgboost import XGBClassifier as xgb_kl
 from sklearn.model_selection import cross_val_score,StratifiedShuffleSplit
 from ax import optimize
 
-baseparam=dict(objective='binary:logistic')
-baseparam.update(dict(n_estimators=1000))
-baseparam.update(dict(learning_rate=0.1))
-baseparam.update(dict(scale_pos_weight=1))
-baseparam.update(dict(booster='dart'))
-baseparam.update(dict(max_depth=3))
-baseparam.update(dict(min_child_weight=2))
-baseparam.update(dict(gamma=0.05))
-baseparam.update(dict(subsample=0.8))
-baseparam.update(dict(colsample_bytree=0.6))
-baseparam.update(dict(reg_alpha=0.01))
-
-Ax_n_trials  = 5
-Ax_max_iter  = 30
-#Ax_par=[{"name": "reg_alpha","type": "range","bounds": [1e-3,10],#"value_type": "float",'log_scale':True}]
-
-colnames = []
-#colnames = ['objective']+[item['name'] for item in Ax_par]
-
-
-
 def tune_params(sc):
     print(('***********     Begin Grid Search for HPs'))
     myobj= obj_wrapper(sc)
-    result_pd = pd.DataFrame([],index=np.arange(Ax_n_trials),columns= colnames,dtype=int)
-    for iter in range(Ax_n_trials):
-        best_parameters, best_values, _,_= optimize(Ax_par,evaluation_function=myobj.ax_optim,minimize=True,total_trials=Ax_max_iter,)
+    result_pd = pd.DataFrame([],index=np.arange(args.Ax_n_trials),columns= args.colnames,dtype=int)
+    for iter in range(args.Ax_n_trials):
+        best_parameters, best_values, _,_= optimize(args.param_rng,evaluation_function=myobj.ax_optim,minimize=True,total_trials=args.Ax_max_iter,)
         score = best_values[0]
         result_pd.iloc[iter,:] = {**score,**best_parameters}
         print ('Best Parameters:  ',best_parameters)
         print ('Best Values:  ',best_values)
     print(result_pd.head())
     result_pd[result_pd.objective == result_pd.objective.min()]
-    full_param = {**result_pd.iloc[0,:].to_dict(), **baseparam}
+    full_param = {**result_pd.iloc[0,:].to_dict(), **args.base_param}
     full_param = adjust_dtype(full_param)
     print('full_params are:  ',full_param)
     return full_param, best_values
 
 class obj_wrapper ():
     def __init__(self,sc):
-        self.xtr = sc.xtr
-        self.xte = sc.xte
-        self.ytr = sc.ytr
-        self.yte = sc.yte
+        self.xtr = sc.xtr;self.xte = sc.xte;self.ytr = sc.ytr;self.yte = sc.yte
     def ax_optim(self,par):
-        full_param = {**par, **baseparam}
+        full_param = {**par, **args.base_param}
         mod = xgb_kl(**full_param)
         kfold = StratifiedShuffleSplit(n_splits=4)
         cv_results = cross_val_score(mod, self.xtr, self.ytr, cv=kfold, scoring='recall')

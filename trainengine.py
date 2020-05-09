@@ -24,13 +24,13 @@ def train_ (scn):
     print ('***********     Start The Training Process')
     xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte()
     eval_set = [(xtr,ytr),(xte,yte)]
-    mod = xgb_kl(**baseparam)
-    if args.en_hp_tune:
+    mod = xgb_kl(**args.base_param)
+    if args.param_rng:
         best_par,best_val=tune_params (scn)
         mod = xgb_kl(**best_par)
-    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=True)
+    best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
     plot_importance(best_mod)
-    pyplot.show()
+    #pyplot.show()
     eval_result = best_mod.evals_result()
     ypred = best_mod.predict(xte)
     print(confusion_matrix(yte, ypred))
