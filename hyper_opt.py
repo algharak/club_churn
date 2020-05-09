@@ -18,8 +18,10 @@ def tune_params(sc):
         print ('Best Parameters:  ',best_parameters)
         print ('Best Values:  ',best_values)
     print(result_pd.head())
-    result_pd[result_pd.objective == result_pd.objective.min()]
-    full_param = {**result_pd.iloc[0,:].to_dict(), **args.base_param}
+    result_pd.sort_values('objective',inplace=True)
+    top_row = result_pd.head(1)
+    top_dict = top_row.iloc[0, :].to_dict()
+    full_param = {**top_dict, **args.base_param}
     full_param = adjust_dtype(full_param)
     print('full_params are:  ',full_param)
     return full_param, best_values
@@ -32,7 +34,7 @@ class obj_wrapper ():
         mod = xgb_kl(**full_param)
         kfold = StratifiedShuffleSplit(n_splits=4)
         cv_results = cross_val_score(mod, self.xtr, self.ytr, cv=kfold, scoring='recall')
-        loss = 1 - max(cv_results)
+        loss = 1 - min(cv_results)
         return loss
 
 def adjust_dtype(di):
