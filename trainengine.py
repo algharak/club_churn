@@ -1,5 +1,9 @@
 from args_pg import args
 from sklearn.metrics import confusion_matrix, balanced_accuracy_score,accuracy_score,classification_report,precision_score,recall_score
+from sklearn.model_selection import StratifiedKFold
+import os
+
+
 from gen_plots import *
 from xgboost import XGBClassifier as xgb_kl
 from xgboost import plot_importance
@@ -27,6 +31,7 @@ def train_ (scn):
     eval_set = [(xtr,ytr),(xte,yte)]
     best_recall_store = 0
     for round in range(args.exp_rounds):
+        os.system('afplay /System/Library/Sounds/Sosumi.aiff')
         mod = xgb_kl(**args.base_param)
         if args.param_rng:
             best_par,best_val=tune_params (scn)
@@ -54,12 +59,12 @@ def metric_recall(y_pred, y_true):
     labels = y_true.get_label() # obtain true labels
     preds = y_pred > 0.5 # obtain predicted values
     preds=preds.astype(np.int)
-    recall = 1-recall_score(labels,preds)
-    return 'recall', recall
+    recall_not = 1-recall_score(labels,preds)
+    return 'recall', recall_not
 
 def do_grid_srch (mod,x,y,param):
     kfold = StratifiedKFold(n_splits=4, shuffle=True, random_state=7)
-    kfold = KFold(n_splits=4, shuffle=True, random_state=7)
+    #kfold = KFold(n_splits=4, shuffle=True, random_state=7)
     grid_search = GridSearchCV(mod, param, scoring="recall", n_jobs=-1, cv=kfold, verbose=1)
     grid_result = grid_search.fit(x,y)
     # summarize results
