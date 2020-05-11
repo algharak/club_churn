@@ -15,9 +15,9 @@ def tune_params(sc):
         best_parameters, best_values, _,_= optimize(args.param_rng,evaluation_function=myobj.ax_optim,minimize=True,total_trials=args.Ax_max_iter,)
         score = best_values[0]
         result_pd.iloc[iter,:] = {**score,**best_parameters}
-        print ('Best Parameters:  ',best_parameters)
-        print ('Best Values:  ',best_values)
-    print(result_pd.head())
+        #print ('Best Parameters:  ',best_parameters)
+        #print ('Best Values:  ',best_values)
+    #print(result_pd.head())
     result_pd.sort_values('objective',inplace=True)
     top_row = result_pd.head(1)
     top_dict = top_row.iloc[0, :].to_dict()
@@ -32,9 +32,11 @@ class obj_wrapper ():
     def ax_optim(self,par):
         full_param = {**par, **args.base_param}
         mod = xgb_kl(**full_param)
-        kfold = StratifiedShuffleSplit(n_splits=4)
+        kfold = StratifiedShuffleSplit(n_splits=3)
         cv_results = cross_val_score(mod, self.xtr, self.ytr, cv=kfold, scoring='recall')
-        loss = 1 - min(cv_results)
+        loss = 1 - max(cv_results)
+        print ('The loss in this round is:     ',loss)
+        print ('params:     ',par)
         return loss
 
 def adjust_dtype(di):

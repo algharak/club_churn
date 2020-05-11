@@ -2,15 +2,13 @@ from args_pg import args
 from sklearn.metrics import confusion_matrix, balanced_accuracy_score,accuracy_score,classification_report,precision_score,recall_score
 from sklearn.model_selection import StratifiedKFold
 import os
-
+from hyper_opt import *
 
 from gen_plots import *
 from xgboost import XGBClassifier as xgb_kl
 from xgboost import plot_importance
 import random
 from experiment import *
-from hyper_opt import *
-
 
 def get_master_pd(path):
     return pd.read_csv(path)
@@ -25,13 +23,12 @@ def extract_cmds (e):
     return do_train,do_cv,rounds,params, get_dataset
 
 def train_ (scn):
-
     print ('***********     Start The Training Process')
     xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte()
     eval_set = [(xtr,ytr),(xte,yte)]
     best_recall_store = 0
+    best_par = 0
     for round in range(args.exp_rounds):
-        os.system('afplay /System/Library/Sounds/Sosumi.aiff')
         mod = xgb_kl(**args.base_param)
         if args.param_rng:
             best_par,best_val=tune_params (scn)
@@ -40,18 +37,20 @@ def train_ (scn):
         plot_importance(best_mod)
         eval_result = best_mod.evals_result()
         ypred = best_mod.predict(xte)
-        print(confusion_matrix(yte, ypred))
-        print(classification_report(yte, ypred))
+        #print(confusion_matrix(yte, ypred))
+        #print(classification_report(yte, ypred))
         print('The Accuracy is:  ', "{:.2%}".format(accuracy_score(yte, ypred)))
         print('The Balanced Accuracy is:  ', "{:.2%}".format(balanced_accuracy_score(yte, ypred)))
         print('The Precision Score is:  ', "{:.2%}".format(precision_score(yte, ypred)))
         recall_scr = recall_score(yte, ypred)
         print('The Recall score is:  ', "{:.2%}".format(recall_scr))
+        record_set = False
         if recall_scr > best_recall_store:
             print ('the best recall score so far is:  ', recall_scr)
             print('the corresponding params are:  ', best_par)
             best_recall_store = recall_scr
-        gen_plot(eval_result,best_par)
+            record_set = True
+        gen_plot(eval_result,best_par,record_set)
     print ('***********Experiment Completed************')
     return
 
@@ -71,7 +70,6 @@ def do_grid_srch (mod,x,y,param):
     print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
     return grid_result.best_params_
 
-###########################################################################################################################
 
 
 def extract_ds():
