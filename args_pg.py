@@ -14,9 +14,9 @@ def parse_args():
     param_rng = []
     baseparam = dict(objective='binary:logistic')
     baseparam.update(dict(booster='dart'))
-    parser.add_argument("--Ax_max_iter", type=int, default=20)
+    parser.add_argument("--Ax_max_iter", type=int, default=1)
     parser.add_argument("--Ax_n_trials", type=int, default=1)
-    baseparam.update(dict(n_estimators=1000))
+    baseparam.update(dict(n_estimators=100))
     baseparam.update(dict(random_state=50))
     # params
     # LR
