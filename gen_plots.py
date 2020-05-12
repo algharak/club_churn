@@ -6,6 +6,7 @@ from xgboost import XGBClassifier as xgb_kl
 from sklearn.metrics import recall_score
 from datetime import datetime
 from matplotlib.font_manager import FontProperties
+from sklearn.model_selection import learning_curve as lc
 
 font = FontProperties()
 font.set_family('serif')
@@ -22,7 +23,7 @@ def audio_alert (n):
 def flatten_list (l):
     return [item for sublist in l for item in sublist]
 
-def gen_plot(dict,dic,rec):
+def gen_cv_plot(dict,dic,rec):
     filename_marker = ''
     audio_alert(1)
     if rec:
@@ -54,38 +55,30 @@ def gen_plot(dict,dic,rec):
     return
 
 
-'''
-tr_crv_dict,te_crv_dict = dict.items()
-tr_crv  = tr_crv_dict[1]
-tr_crv_dt  = 1-np.array(tr_crv['recall'])
-te_crv = te_crv_dict[1]
-te_crv_dt = 1- np.array(te_crv['recall'])
-x = np.arange(1,len(te_crv_dt)+1)
-fig, ax = pyplot.subplots(figsize=(8, 8))
-bottom, top = pyplot.ylim()
-pyplot.ylim (top = 0.9)
-pyplot.ylim (bottom = 0.2)
-pyplot.grid(b=True, which='both', axis='both')
-ax.plot(x,tr_crv_dt, label='Train')
-ax.plot(x,te_crv_dt, label='Test')
-ax.legend()
-pyplot.title('Train vs. Test Recall')
-pyplot.show()
+def gen_lc_plot(x,y,mod):
+    train_sizes,train_scores, test_scores = lc(mod,x,y,train_sizes=np.linspace(0.1, 1.0 , num=10),cv=4)
 
+    pyplot.figure()
+    pyplot.title('Learning Curve')
+    #if ylim is not None:
+        #plt.ylim(*ylim)
+    pyplot.xlabel("Training examples")
+    pyplot.ylabel("Score")
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+    pyplot.grid()
 
-'''
-
-
-
-
-
-def test_ (mod,x,y,**par):
-    print('best params:   ', par)
-    par['max_depth'] = int(par['max_depth'])
-    par['n_estimators'] = int(par['n_estimators'])
-    mod = xgb_kl(**par)
-    best_mod = mod.fit(x,y, eval_metric='auc')
-    ypred = best_mod.predict(x)
-    rs = recall_score(y, ypred)
-    print('The best tr recall score so far:  ', "{:.2%}".format(rs))
+    pyplot.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+    pyplot.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    pyplot.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    pyplot.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+    pyplot.legend(loc="best")
+    pyplot.show()
     return

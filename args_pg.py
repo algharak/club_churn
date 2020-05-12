@@ -16,15 +16,15 @@ def parse_args():
     param_rng = []
     baseparam = dict(objective='binary:logistic')
     baseparam.update(dict(booster='dart'))
-    parser.add_argument("--Ax_max_iter", type=int, default=6)
+    parser.add_argument("--Ax_max_iter", type=int, default=1)
     parser.add_argument("--Ax_n_trials", type=int, default=1)
     baseparam.update(dict(n_estimators=700))
     baseparam.update(dict(random_state=50))
     # params
     # LR
-    baseparam.update(dict(learning_rate=0.16))
-    #lr_rng = {"name": "learning_rate","type": "choice","values": [0.15,0.151],"value_type": "float",'log_scale':True}
-    #param_rng.append(lr_rng)
+    #baseparam.update(dict(learning_rate=0.16))
+    lr_rng = {"name": "learning_rate","type": "choice","values": [0.16,0.1601],"value_type": "float",'log_scale':True}
+    param_rng.append(lr_rng)
 
     # scale_pos_weight
     baseparam.update(dict(scale_pos_weight=1))
@@ -32,14 +32,14 @@ def parse_args():
     #param_rng.append(sc_po_rng)
 
     # max_depth
-    #baseparam.update(dict(max_depth=8))
-    max_de_rng = {"name": "max_depth","type": "choice","values": [7,8,9],"value_type": "int",'log_scale':False}
-    param_rng.append(max_de_rng)
+    baseparam.update(dict(max_depth=8))
+    #max_de_rng = {"name": "max_depth","type": "choice","values": [7,8,9],"value_type": "int",'log_scale':False}
+    #param_rng.append(max_de_rng)
 
     # min_child_weight
-    #baseparam.update(dict(min_child_weight=12))
-    min_c_we_rng = {"name":'min_child_weight',"type": "choice","values": [11,12,13],"value_type": "int",'log_scale':False}
-    param_rng.append(min_c_we_rng)
+    baseparam.update(dict(min_child_weight=12))
+    #min_c_we_rng = {"name":'min_child_weight',"type": "choice","values": [11,12,13],"value_type": "int",'log_scale':False}
+    #param_rng.append(min_c_we_rng)
 
     # gamma
     baseparam.update(dict(gamma=0.16))
@@ -47,14 +47,14 @@ def parse_args():
     #param_rng.append(gamma_rng)
 
     # subsample range
-    #baseparam.update(dict(subsample=1))
-    subsam_rng = {'name':'subsample',"type": "range","bounds": [0.5,1.0],"value_type": "float",'log_scale':False}
-    param_rng.append(subsam_rng)
+    baseparam.update(dict(subsample=1))
+    #subsam_rng = {'name':'subsample',"type": "range","bounds": [0.5,1.0],"value_type": "float",'log_scale':False}
+    #param_rng.append(subsam_rng)
 
     # colsample
-    #baseparam.update(dict(colsample_bytree=0.8))
-    colsam_rng = {'name':'colsample_bytree',"type": "range","bounds": [0.4,1.0],"value_type": "float",'log_scale':False}
-    param_rng.append(colsam_rng)
+    baseparam.update(dict(colsample_bytree=0.8))
+    #colsam_rng = {'name':'colsample_bytree',"type": "range","bounds": [0.4,1.0],"value_type": "float",'log_scale':False}
+    #param_rng.append(colsam_rng)
 
     # reg_alpha
     baseparam.update(dict(reg_alpha=0.002))

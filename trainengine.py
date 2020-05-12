@@ -50,7 +50,8 @@ def train_ (scn):
             print('the corresponding params are:  ', best_par)
             best_recall_store = recall_scr
             record_set = True
-        gen_plot(eval_result,best_par,record_set)
+        gen_cv_plot(eval_result,best_par,record_set)
+        #gen_lc_plot(xtr,ytr,best_mod)
     print ('***********Experiment Completed************')
     return
 
