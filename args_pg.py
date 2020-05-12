@@ -2,28 +2,26 @@ import argparse
 ####setup parameters
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--src_file", type=str, default=
-                        './dataset/club_churn_source.csv')
-    parser.add_argument("--plt_dir", type=str, default=
-    './plots')
+    parser.add_argument("--src_file", type=str, default='./dataset/club_churn_source.csv')
+    parser.add_argument("--plt_dir", type=str, default='./plots')
     parser.add_argument("--shuffle", type=int, default=5)
     parser.add_argument("--plt_learn_cv", type=bool, default=True)
     parser.add_argument("--trte_split", type=float, default=0.2)
     #parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--Kfolds", type=int, default=1)
-    parser.add_argument("--exp_rounds", type=int, default=1200)
+    parser.add_argument("--exp_rounds", type=int, default=700)
     # param baseline
     param_rng = []
     baseparam = dict(objective='binary:logistic')
     baseparam.update(dict(booster='dart'))
-    parser.add_argument("--Ax_max_iter", type=int, default=1)
+    parser.add_argument("--Ax_max_iter", type=int, default=20)
     parser.add_argument("--Ax_n_trials", type=int, default=1)
-    baseparam.update(dict(n_estimators=700))
+    baseparam.update(dict(n_estimators=1000))
     baseparam.update(dict(random_state=50))
     # params
     # LR
     #baseparam.update(dict(learning_rate=0.16))
-    lr_rng = {"name": "learning_rate","type": "choice","values": [0.16,0.1601],"value_type": "float",'log_scale':True}
+    lr_rng = {"name": "learning_rate","type": "range","bounds": [0.002,0.1],"value_type": "float",'log_scale':True}
     param_rng.append(lr_rng)
 
     # scale_pos_weight
@@ -37,12 +35,12 @@ def parse_args():
     #param_rng.append(max_de_rng)
 
     # min_child_weight
-    baseparam.update(dict(min_child_weight=12))
+    baseparam.update(dict(min_child_weight=9))
     #min_c_we_rng = {"name":'min_child_weight',"type": "choice","values": [11,12,13],"value_type": "int",'log_scale':False}
     #param_rng.append(min_c_we_rng)
 
     # gamma
-    baseparam.update(dict(gamma=0.16))
+    baseparam.update(dict(gamma=0.0))
     #gamma_rng = {'name':'gamma',"type": "range","bounds": [1e-3, 5e-1],"value_type": "float",'log_scale':True}
     #param_rng.append(gamma_rng)
 
@@ -52,18 +50,18 @@ def parse_args():
     #param_rng.append(subsam_rng)
 
     # colsample
-    baseparam.update(dict(colsample_bytree=0.8))
+    baseparam.update(dict(colsample_bytree=1))
     #colsam_rng = {'name':'colsample_bytree',"type": "range","bounds": [0.4,1.0],"value_type": "float",'log_scale':False}
     #param_rng.append(colsam_rng)
 
     # reg_alpha
-    baseparam.update(dict(reg_alpha=0.002))
-    #reg_a_rng = {'name':'reg_alpha',"type": "range","bounds": [0.002,0.003],"value_type": "float",'log_scale':True}
+    baseparam.update(dict(reg_alpha=0))
+    #reg_a_rng = {'name':'reg_alpha',"type": "range","bounds": [0.001,0.2],"value_type": "float",'log_scale':True}
     #param_rng.append(reg_a_rng)
 
     # reg_lambda
-    baseparam.update(dict(reg_lambda=0.012))
-    #reg_a_rng = {'name': 'reg_lambda', "type": "range", "bounds": [0.012,0.013], "value_type": "float", 'log_scale': True}
+    baseparam.update(dict(reg_lambda=0))
+    #reg_a_rng = {'name': 'reg_lambda', "type": "range", "bounds": [0.001,0.2], "value_type": "float", 'log_scale': True}
     #param_rng.append(reg_a_rng)
 
     # Aggregation
