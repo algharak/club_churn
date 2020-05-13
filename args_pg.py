@@ -8,19 +8,19 @@ def parse_args():
     parser.add_argument("--plt_learn_cv", type=bool, default=True)
     parser.add_argument("--trte_split", type=float, default=0.2)
     #parser.add_argument("--epochs", type=int, default=5)
-    parser.add_argument("--Kfolds", type=int, default=1)
-    parser.add_argument("--exp_rounds", type=int, default=1000)
+    parser.add_argument("--Kfolds", type=int, default=3)
+    parser.add_argument("--exp_rounds", type=int, default=5)
     # param baseline
     param_rng = []
     baseparam = dict(objective='binary:logistic')
     baseparam.update(dict(booster='dart'))
     parser.add_argument("--Ax_max_iter", type=int, default=1)
-    parser.add_argument("--Ax_n_trials", type=int, default=1)
-    baseparam.update(dict(n_estimators=1000))
+    parser.add_argument("--Ax_n_trials", type=int, default=2)
+    baseparam.update(dict(n_estimators=100))
     baseparam.update(dict(random_state=50))
     # params
     # LR
-    baseparam.update(dict(learning_rate=0.014))
+    baseparam.update(dict(learning_rate=0.007))
     #lr_rng = {"name": "learning_rate","type": "range","bounds": [0.025,0.1],"value_type": "float",'log_scale':True}
     #param_rng.append(lr_rng)
 
@@ -31,18 +31,18 @@ def parse_args():
 
     # max_depth
     baseparam.update(dict(max_depth=8))
-    #max_de_rng = {"name": "max_depth","type": "choice","values": [7,8,9],"value_type": "int",'log_scale':False}
+    #max_de_rng = {"name": "max_depth","type": "choice","values": [7,8],"value_type": "int",'log_scale':False}
     #param_rng.append(max_de_rng)
 
-    # min_child_weight
+    #min_child_weight
     baseparam.update(dict(min_child_weight=9))
     #min_c_we_rng = {"name":'min_child_weight',"type": "choice","values": [11,12,13],"value_type": "int",'log_scale':False}
     #param_rng.append(min_c_we_rng)
 
     # gamma
-    #baseparam.update(dict(gamma=0.0))
-    gamma_rng = {'name':'gamma',"type": "range","bounds": [0.00112, 0.0012],"value_type": "float",'log_scale':True}
-    param_rng.append(gamma_rng)
+    baseparam.update(dict(gamma=0.0))
+    #gamma_rng = {'name':'gamma',"type": "range","bounds": [0.00112, 0.0012],"value_type": "float",'log_scale':True}
+    #param_rng.append(gamma_rng)
 
     # subsample range
     baseparam.update(dict(subsample=1))

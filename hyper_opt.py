@@ -32,7 +32,7 @@ class obj_wrapper ():
     def ax_optim(self,par):
         full_param = {**par, **args.base_param}
         mod = xgb_kl(**full_param)
-        kfold = StratifiedShuffleSplit(n_splits=3)
+        kfold = StratifiedShuffleSplit(n_splits=args.Kfold)
         cv_results = cross_val_score(mod, self.xtr, self.ytr, cv=kfold, scoring='recall')
         loss = 1 - max(cv_results)
         print ('The loss in this round is:     ',loss)

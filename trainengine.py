@@ -74,11 +74,12 @@ def train_ (scn):
     best_recall_store = 0
     best_par = 0
     for round in range(args.exp_rounds):
-        mod = xgb_kl(**args.base_param)
+        best_par = args.base_param
+        mod = xgb_kl(**best_par)
         if args.param_rng:
             best_par,best_val=tune_params (scn)
             mod = xgb_kl(**best_par)
-        best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=False)
+        best_mod = mod.fit(xtr, ytr, eval_set=eval_set,eval_metric=metric_recall,verbose=True)
         plot_importance(best_mod)
         eval_result = best_mod.evals_result()
         ypred = best_mod.predict(xte)
