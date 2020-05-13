@@ -15,7 +15,8 @@ class dset():
     def __init__(self,frm,clip=False,clip_size=2000,shuffle=True):
         self.labels = frm.columns[-1]
         self.predictors = frm.columns[0:-1]
-        self.frm = frm
+        self.frm = pd.concat([frm,frm,frm,frm,frm],ignore_index=True)
+        #self.frm = frm
         nufrm = self.frm.copy()
         if clip:
             nufrm = self.frm.head(clip_size)
