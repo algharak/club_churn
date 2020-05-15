@@ -82,8 +82,6 @@ def train_ (scn):
         plot_importance(best_mod)
         eval_result = best_mod.evals_result()
         ypred = best_mod.predict(xte)
-        #print(confusion_matrix(yte, ypred))
-        #print(classification_report(yte, ypred))
         print('The Accuracy is:  ', "{:.2%}".format(accuracy_score(yte, ypred)))
         print('The Balanced Accuracy is:  ', "{:.2%}".format(balanced_accuracy_score(yte, ypred)))
         print('The Precision Score is:  ', "{:.2%}".format(precision_score(yte, ypred)))
