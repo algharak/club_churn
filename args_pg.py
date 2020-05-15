@@ -1,5 +1,4 @@
 import argparse
-from random import randint
 
 ####setup parameters
 def parse_args():

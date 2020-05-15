@@ -10,6 +10,7 @@ from args_pg import parse_args
 args = parse_args()
 from transform import *
 from utils import *
+from random import randint
 
 class dset():
     def __init__(self,frm,clip=False,clip_size=2000,shuffle=True):
