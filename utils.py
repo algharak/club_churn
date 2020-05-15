@@ -35,7 +35,6 @@ def extract_cmds (e):
 
 def do_grid_srch (mod,x,y,param):
     kfold = StratifiedKFold(n_splits=4, shuffle=True, random_state=7)
-    #kfold = KFold(n_splits=4, shuffle=True, random_state=7)
     grid_search = GridSearchCV(mod, param, scoring="recall", n_jobs=-1, cv=kfold, verbose=1)
     grid_result = grid_search.fit(x,y)
     # summarize results
@@ -68,7 +67,6 @@ from sklearn.metrics import recall_score
 from datetime import datetime
 from matplotlib.font_manager import FontProperties
 from sklearn.model_selection import learning_curve as lc
-
 font = FontProperties()
 font.set_family('serif')
 font.set_name('Times New Roman')
@@ -90,7 +88,7 @@ def gen_cv_plot(dict,dic,rec):
     if rec:
         filename_marker = '********'
         audio_alert(2)
-    msg = "\n".join("{}\t{}".format(k, v) for k, v in dic.items())
+    msg = "\n".join("{} \ {}".format(k, v) for k, v in dic.items())
     print(msg)
     tr_crv_dict, te_crv_dict = dict.items()
     tr_crv = tr_crv_dict[1]
@@ -101,13 +99,19 @@ def gen_cv_plot(dict,dic,rec):
     fig, ax = pyplot.subplots(figsize=(9, 9))
     bottom, top = pyplot.ylim()
     pyplot.ylim (top = 1.0)
-    pyplot.ylim (bottom = 0.0)
+    pyplot.ylim (bottom = 0.2)
+
+    pyplot.xlim (left = 0.0)
+    pyplot.xlim (right = 500.0)
+    pyplot.xlabel ('No. of  Iterations')
+    pyplot.ylabel (' S P E C I F I T Y ')
     pyplot.grid(b=True, which='both', axis='both')
     ax.plot(x,tr_crv_dt, label='Train')
     ax.plot(x,te_crv_dt, label='Test')
     ax.legend()
-    pyplot.title('Train vs. Test')
-    ax.text(0.05, 0.95, msg, transform=ax.transAxes, fontsize=9,
+    pyplot.title('Train vs. Text')
+    pyplot.suptitle('Membership Churn Prediction - Specifity')
+    ax.text(0.0, 1.0, msg, transform=ax.transAxes, fontsize=9,
             verticalalignment='top')
     pfile = args.plt_dir+'/'+ datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p") + filename_marker
     pyplot.savefig(pfile,dpi=None, facecolor='w', edgecolor='w',
@@ -118,11 +122,8 @@ def gen_cv_plot(dict,dic,rec):
 
 def gen_lc_plot(x,y,mod):
     train_sizes,train_scores, test_scores = lc(mod,x,y,train_sizes=np.linspace(0.1, 1.0 , num=10),cv=4)
-
     pyplot.figure()
     pyplot.title('Learning Curve')
-    #if ylim is not None:
-        #plt.ylim(*ylim)
     pyplot.xlabel("Training examples")
     pyplot.ylabel("Score")
     train_scores_mean = np.mean(train_scores, axis=1)

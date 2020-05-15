@@ -15,7 +15,7 @@ class dset():
     def __init__(self,frm,clip=False,clip_size=2000,shuffle=True):
         self.labels = frm.columns[-1]
         self.predictors = frm.columns[0:-1]
-        self.frm = pd.concat([frm,frm,frm,frm,frm],ignore_index=True)
+        self.frm = pd.concat([frm,frm,frm,frm,frm,frm,frm,frm,frm,frm,frm,frm],ignore_index=True)
         #self.frm = frm
         nufrm = self.frm.copy()
         if clip:
@@ -72,9 +72,8 @@ def train_ (scn):
     xtr=scn.xtr() ;xte=scn.xte() ;ytr=scn.ytr() ;yte=scn.yte()
     eval_set = [(xtr,ytr),(xte,yte)]
     best_recall_store = 0
-    best_par = 0
     for round in range(args.exp_rounds):
-        best_par = args.base_param
+        best_par = {**args.base_param,**dict(random_state=randint(1,100))}
         mod = xgb_kl(**best_par)
         if args.param_rng:
             best_par,best_val=tune_params (scn)
@@ -96,8 +95,8 @@ def train_ (scn):
             print('the corresponding params are:  ', best_par)
             best_recall_store = recall_scr
             record_set = True
-        gen_cv_plot(eval_result,best_par,record_set)
-        #gen_lc_plot(xtr,ytr,best_mod)
+        #gen_cv_plot(eval_result,best_par,record_set)
+        gen_lc_plot(xtr,ytr,best_mod)
     print ('***********Experiment Completed************')
     return
 
